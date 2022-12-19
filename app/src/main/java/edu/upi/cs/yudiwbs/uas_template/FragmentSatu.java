@@ -63,7 +63,7 @@ public class FragmentSatu extends Fragment {
                                           org.json.JSONObject response) {
                         Log.d("debugyudi","onSuccess jsonobjek");
 
-                        /* hasil jsonnha
+                        /* hasil jsonn
                         {"time":{"updated":"Dec 19, 2022 09:53:00 UTC","updatedISO":"2022-12-19T09:53:00+00:00",
                                 "updateduk":"Dec 19, 2022 at 09:53 GMT"},
 
@@ -79,7 +79,7 @@ public class FragmentSatu extends Fragment {
                         //ambil USD rate
                         String rate="";
                         try {
-                            JSONObject bpi = response.getJSONObject("bpi"); // 4 adalah "bpi"
+                            JSONObject bpi = response.getJSONObject("bpi");
                             JSONObject usd = bpi.getJSONObject("USD");
                             rate = (String) usd.get("rate");
                         } catch (JSONException e) {
@@ -99,8 +99,8 @@ public class FragmentSatu extends Fragment {
                     }
 
                     @Override
-                    public void onFailure(int statusCode, cz.msebera.android.httpclient.Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                        Log.e("debugyudi", "error " + ":" + statusCode +":"+ errorResponse.toString());
+                    public  void onFailure(int statusCode, cz.msebera.android.httpclient.Header[] headers, String err, Throwable throwable)  {
+                        Log.e("debugyudi", "error " + ":" + statusCode +":"+ err);
                     }
                 });
 
