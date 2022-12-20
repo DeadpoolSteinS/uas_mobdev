@@ -3,6 +3,8 @@ package edu.upi.cs.yudiwbs.uas_template;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -25,6 +27,7 @@ import edu.upi.cs.yudiwbs.uas_template.databinding.FragmentSatuBinding;
 public class FragmentSatu extends Fragment {
 
     private FragmentSatuBinding binding;
+    private ViewModelFragmentSatu model;
 
     public FragmentSatu() {
         // Required empty public constructor
@@ -49,61 +52,82 @@ public class FragmentSatu extends Fragment {
         binding = FragmentSatuBinding.inflate(inflater, container, false);
         View view = binding.getRoot();
 
+        model = new ViewModelProvider(getActivity()).get(ViewModelFragmentSatu.class);
+
+        // observer
+        final Observer<String> observer = new Observer<String>() {
+            @Override
+            public void onChanged(String s) {
+                binding.tvKeterangan.setText(s);
+            }
+        };
+
+        // connect viewmodel and observer
+        model.data.observe(getViewLifecycleOwner(), observer);
+
         binding.button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                binding.tvKeterangan.setText("Tunggu sebentar, loading data harga bitcoin (USD)");
-                //https://api.coindesk.com/v1/bpi/currentprice.json
-                Log.d("debugyudi","onclick");
-                ApiHargaBitcoin.get("bpi/currentprice.json", null, new JsonHttpResponseHandler() {
+                binding.tvKeterangan.setText("Loading...");
+
+                ApiHargaBitcoin.get("random_joke", null, new JsonHttpResponseHandler() {
                     @Override
                     //hati2 success jsonobjek atau jsonarray
                     public void onSuccess(int statusCode,
                                           cz.msebera.android.httpclient.Header[] headers,
                                           org.json.JSONObject response) {
-                        Log.d("debugyudi","onSuccess jsonobjek");
-
-                        /* hasil jsonn
-                        {"time":{"updated":"Dec 19, 2022 09:53:00 UTC","updatedISO":"2022-12-19T09:53:00+00:00",
-                                "updateduk":"Dec 19, 2022 at 09:53 GMT"},
-
-                        "disclaimer":"This data was produced from the CoinDesk Bitcoin Price Index (USD).
-                              Non-USD currency data converted using hourly conversion rate from openexchangerates.org",
-                         "chartName":"Bitcoin",
-                         "bpi":{"USD":{"code":"USD","symbol":"&#36;","rate":"16,730.3955",
-                                    "description":"United States Dollar","rate_float":16730.3955},
-                                "GBP":{"code":"GBP","symbol":"&pound;","rate":"13,979.7846",
-                                  "description":"British Pound Sterling","rate_float":13979.7846},      "EUR":{"code":"EUR","symbol":"&euro;","rate":"16,297.8478","description":"Euro","rate_float":16297.8478}}}
-                         */
-
-                        //ambil USD rate
-                        String rate="";
+                        Log.d("debugyudi", "onSuccess jsonobjek");
+                        String joke = "";
                         try {
-                            JSONObject bpi = response.getJSONObject("bpi");
-                            JSONObject usd = bpi.getJSONObject("USD");
-                            rate = (String) usd.get("rate");
+                            System.out.println(response);
+                            joke = (String) response.get("setup");
+                            String jawaban = (String) response.get("punchline");
+                            model.setJawaban(jawaban);
+                            Log.d("debugyudi", jawaban);
                         } catch (JSONException e) {
                             e.printStackTrace();
-                            Log.e("debugyudi", "msg error" +":" +e.getMessage());
+                            Log.e("debugyudi", "msg error" + ":" + e.getMessage());
                         }
-                        Log.d("debugyudi", "rate" +":" +rate);
-                        binding.tvKeterangan.setText(rate);
+                        binding.tvKeterangan.setText(joke);
+                        model.setData(joke);
                     }
 
                     public void onSuccess(int statusCode,
                                           cz.msebera.android.httpclient.Header[] headers,
                                           org.json.JSONArray response) {
 
-                        Log.d("debugyudi","onSuccess jsonarray");
 
                     }
 
                     @Override
-                    public  void onFailure(int statusCode, cz.msebera.android.httpclient.Header[] headers, String err, Throwable throwable)  {
-                        Log.e("debugyudi", "error " + ":" + statusCode +":"+ err);
+                    public void onFailure(int statusCode, cz.msebera.android.httpclient.Header[] headers, String err, Throwable throwable) {
+                        Log.e("debugyudi", "error " + ":" + statusCode + ":" + err);
                     }
                 });
 
+            }
+        });
+
+        binding.submitJawaban.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String jawabanUser = binding.jawabanuser.getText().toString();
+                String status = "";
+
+                String jawabanBenarnyaUy = model.jawaban.getValue().toString();
+
+                Log.d("debugyudi", "'" + jawabanBenarnyaUy + "'");
+                Log.d("debugyudi", "'" + jawabanUser + "'");
+
+                if(jawabanUser.equals(jawabanBenarnyaUy)){
+                    status = "BENAR";
+                    binding.keteranganJawaban.setText(status);
+                }
+                else{
+                    status = "Jawaban salah, seharusnya: " + model.jawaban.getValue();
+                    binding.keteranganJawaban.setText(status);
+                }
+                model.statusJawaban.setValue(status);
             }
         });
 

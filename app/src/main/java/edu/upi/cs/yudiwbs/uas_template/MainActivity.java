@@ -12,7 +12,6 @@ import com.google.android.material.navigation.NavigationBarView;
 
 public class MainActivity extends AppCompatActivity {
 
-
     private BottomNavigationView bnv;
 
     @Override
@@ -45,7 +44,6 @@ public class MainActivity extends AppCompatActivity {
                                             .commit();
                                 }
                                 break;
-
                         }
 
                         return true;
