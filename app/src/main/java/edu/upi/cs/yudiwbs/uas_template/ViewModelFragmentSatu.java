@@ -8,6 +8,7 @@ public class ViewModelFragmentSatu extends ViewModel {
     public MutableLiveData<String> data;
     public MutableLiveData<String> jawaban;
     public MutableLiveData<String> statusJawaban;
+    public MutableLiveData<String> input;
 
     public void setData(String data){
         this.data.setValue(data);
@@ -17,6 +18,9 @@ public class ViewModelFragmentSatu extends ViewModel {
     }
     public void setStatusJawaban(String data){
         this.statusJawaban.setValue(data);
+    }
+    public void setInput(String data){
+        this.input.setValue(data);
     }
 
     public LiveData<String> getLiveData() {
@@ -35,5 +39,8 @@ public class ViewModelFragmentSatu extends ViewModel {
 
         this.statusJawaban = new MutableLiveData<String>();
         this.statusJawaban.setValue("");
+
+        this.input = new MutableLiveData<String>();
+        this.input.setValue("");
     }
 }

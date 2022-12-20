@@ -75,6 +75,16 @@ public class FragmentSatu extends Fragment {
         // connect viewmodel and observer
         model.statusJawaban.observe(getViewLifecycleOwner(), observer2);
 
+        final Observer<String> observer3 = new Observer<String>() {
+            @Override
+            public void onChanged(String s) {
+                binding.jawabanuser.setText(s);
+            }
+        };
+
+        // connect viewmodel and observer
+        model.data.observe(getViewLifecycleOwner(), observer2);
+
         binding.button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -138,6 +148,7 @@ public class FragmentSatu extends Fragment {
                     binding.keteranganJawaban.setText(status);
                 }
                 model.statusJawaban.setValue(status);
+                model.input.setValue(jawabanUser);
             }
         });
 
